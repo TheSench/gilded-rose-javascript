@@ -1,9 +1,11 @@
+// Cannot change this function
 export function Item(name, sellIn, quality) {
     this.name = name;
     this.sellIn = sellIn;
     this.quality = quality;
 }
 
+// Cannot change this
 export const items = [];
 
 items.push(new Item('+5 Dexterity Vest', 10, 20));
@@ -14,9 +16,7 @@ items.push(new Item('Backstage passes to a TAFKAL80ETC concert', 15, 20));
 items.push(new Item('Conjured Mana Cake', 3, 6));
 
 export function updateQuality() {
-  for (var i = 0; i < items.length; i++) {
-    updateItemQuality(items[i]);
-  }
+  items.forEach(updateItemQuality);
 }
 
 export function updateItemQuality(item) {

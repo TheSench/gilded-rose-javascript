@@ -40,7 +40,8 @@ describe("Gilded Rose", () => {
 
     qualityOf(itemDefs.dexterityVest)
       .whenSellInEquals(10).changesBy(-1)
-      .and.whenSellInEquals(0).changesBy(-2);
+      .and.whenSellInEquals(0).changesBy(-2)
+      .and.neverGoesBelow(0);
   });
 
   describe('Elixir of the Mongoose', () => {
@@ -48,7 +49,8 @@ describe("Gilded Rose", () => {
 
     qualityOf(itemDefs.elixirOfTheMongoose)
       .whenSellInEquals(10).changesBy(-1)
-      .and.whenSellInEquals(0).changesBy(-2);
+      .and.whenSellInEquals(0).changesBy(-2)
+      .and.neverGoesBelow(0);
   });
 
   describe('Bakstage Pass', () => {
@@ -70,7 +72,8 @@ describe("Gilded Rose", () => {
       .and.whenSellInEquals(0).isSetTo(0)
       .and.whenSellInEquals(-1).isSetTo(0)
       .and.whenSellInEquals(-2).isSetTo(0)
-      .and.whenSellInEquals(10).neverGoesAbove(50);
+      .and.whenSellInEquals(10).neverGoesAbove(50)
+      .and.neverGoesBelow(0);
   });
 
   describe('Sulfuras', () => {
@@ -84,8 +87,10 @@ describe("Gilded Rose", () => {
     sellInOf(itemDefs.conjuredManaCake).changesBy(-1);
 
     qualityOf(itemDefs.conjuredManaCake)
-      .whenSellInEquals(10).changesBy(-1)
-      .and.whenSellInEquals(0).changesBy(-2);
+      .whenSellInEquals(10).changesBy(-2)
+      .and.whenSellInEquals(1).changesBy(-2)
+      .and.whenSellInEquals(0).changesBy(-2)
+      .and.neverGoesBelow(0);
   });
 });
 
@@ -118,9 +123,10 @@ function qualityOf(itemDef) {
       return {
         changesBy: makeTest(qualityOf, (qualityChange) => qualityChangesByNum(itemDef, sellIn, qualityChange)),
         isSetTo: makeTest(qualityOf, (newValue) => qualitySetToNum(itemDef, sellIn, newValue)),
-        neverGoesAbove: makeTest(qualityOf, (maxValue) => qualityCappedAt(itemDef, sellIn, maxValue)),
+        neverGoesAbove: makeTest(qualityOf, (maxValue) => qualityMaximum(itemDef, sellIn, maxValue)),
       };
     },
+    neverGoesBelow: makeTest(qualityOf, (minValue) => qualityMinimum(itemDef, -1, minValue)),
     neverChanges() {
       qualityNeverChanges(itemDef);
     }
@@ -147,13 +153,22 @@ function qualitySetToNum(createItem, sellIn, newValue) {
   });
 }
 
-function qualityCappedAt(createItem, sellIn, maxValue) {
-
+function qualityMaximum(createItem, sellIn, maxValue) {
   it(`given a sellIn of ${sellIn}, quality should never go above ${maxValue}`, () => {
     [0, 1, 2, 3, 4, 5].forEach((quality) => {
       const item = createItem(sellIn, maxValue-quality);
       updateItemQuality(item);
       expect(item.quality).to.be.lessThan(maxValue+1);
+    });
+  });
+}
+
+function qualityMinimum(createItem, sellIn, minValue) {
+  it(`given a sellIn of ${sellIn}, quality should never go below ${minValue}`, () => {
+    [0, 1, 2, 3, 4, 5].forEach((quality) => {
+      const item = createItem(sellIn, minValue+quality);
+      updateItemQuality(item);
+      expect(item.quality).to.be.greaterThan(minValue-1);
     });
   });
 }
