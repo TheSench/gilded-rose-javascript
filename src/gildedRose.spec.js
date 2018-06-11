@@ -89,7 +89,7 @@ describe("Gilded Rose", () => {
     qualityOf(itemDefs.conjuredManaCake)
       .whenSellInEquals(10).changesBy(-2)
       .and.whenSellInEquals(1).changesBy(-2)
-      .and.whenSellInEquals(0).changesBy(-2)
+      .and.whenSellInEquals(0).changesBy(-4)
       .and.neverGoesBelow(0);
   });
 });
